@@ -41,7 +41,7 @@
                 </div>
 
             </div>
-            <div class="portlet-body">
+            <div class="portlet-body overflow-x-scroll">
                 <div class="table-toolbar">
                     <div class="row">
                         <div class="col-md-6">

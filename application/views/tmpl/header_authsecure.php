@@ -52,7 +52,7 @@
     <!-- DOC: Apply "page-footer-fixed" class to the body element to have fixed footer -->
     <!-- DOC: Apply "page-sidebar-reversed" class to put the sidebar on the right side -->
     <!-- DOC: Apply "page-full-width" class to the body element to have full width page without the sidebar menu -->
-    <body class="page-header-fixed page-quick-sidebar-over-content page-sidebar-closed-hide-logo page-container-bg-solid">
+    <body class="page-header-fixed page-quick-sidebar-over-content page-container-bg-solid">
         <!-- BEGIN HEADER -->
         <div class="page-header navbar navbar-fixed-top">
             <!-- BEGIN HEADER INNER -->
@@ -60,7 +60,7 @@
                 <!-- BEGIN LOGO -->
                 <div class="page-logo" style='style="margin: 0px 0 0 0;"'>
                     <a href="<?php echo base_url(); ?>authuser">
-                        <img src="<?php echo base_url(); ?>webtool/img/logo.png" alt="AutoMedSys" style="width:75%;" class="logo-default"/>
+                        <img src="<?php echo base_url(); ?>webtool/img/logo.png" alt="AutoMedSys" class="logo-default"/>
                     </a>
                     <div class="menu-toggler sidebar-toggler hide">
                     </div>

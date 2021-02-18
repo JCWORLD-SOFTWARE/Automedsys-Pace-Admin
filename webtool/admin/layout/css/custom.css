@@ -59,15 +59,46 @@ Change Quick Sidebar Width
 }
 */
 
+.logo-default {
+  height: 50px;
+}
+
+.overflow-x-scroll {
+  overflow-x: scroll;
+}
+
+.overflow-x-scroll::-webkit-scrollbar {
+  height: 0.6em;
+}
+ 
+.overflow-x-scroll::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+.overflow-x-scroll::-webkit-scrollbar-track-piece {
+  background-color: #f0f0f0;
+}
+
+.overflow-x-scroll::-webkit-scrollbar-thumb {
+  background-color: #364150;
+  border-radius: 5px;
+}
+
+.portlet {
+	margin-top: 20px;
+}
+
 .oauthbutton {
   border-radius: .5rem !important;
-  padding-left: 0;
-  padding-right: 0;
-  margin: .3rem;
-  width: 43%;
-  background-color: white;
-  cursor: pointer;
-
+    padding-left: 0;
+    padding-right: 0;
+    margin: .3rem;
+    width: 100%;
+    background-color: white;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.7rem;
 }
 
 .oauthbutton:hover{
@@ -75,5 +106,6 @@ Change Quick Sidebar Width
 }
 
 .oauthbutton img{
-  width: 16% !important;
+  width: 24px !important;
+  margin-left: 10px;
 }

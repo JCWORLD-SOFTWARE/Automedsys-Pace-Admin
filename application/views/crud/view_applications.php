@@ -39,9 +39,9 @@
                     <i class="fa fa-cogs font-green-sharp"></i>
                     <span class="caption-subject font-green-sharp bold uppercase">Applications Management</span>
                 </div>
-
             </div>
-            <div class="portlet-body">
+            
+            <div class="portlet-body overflow-x-scroll">
                 <div class="table-toolbar">
                     <div class="row">
                         <div class="col-md-6">
@@ -66,7 +66,7 @@
             <i class="fa fa-angle-down"></i>
         </div>
     </div -->
-    <? if (isset($result) && is_array($result) && count($result)>0) { ?>
+            <?php if (isset($result) && is_array($result) && count($result)>0) { ?>
                 <table class="table table-striped table-hover table-bordered" id="sample_editable_1" style="font-size:8.5pt;">
                     <thead>
                         <tr>
@@ -159,10 +159,10 @@
 
                     </tbody>
                 </table>
-    <? } else { ?> 
+            <?php } else { ?> 
                 NO REQUESTS LOADED<br/>
                 <div style="font-weight:bold;color:red;"><?= $message ?></div>
-    <? } ?>
+            <?php } ?>
             </div>
         </div>
         <!-- END EXAMPLE TABLE PORTLET-->

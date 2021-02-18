@@ -103,7 +103,6 @@ class Authuser extends CI_Controller {
         $this->load->view('tmpl/footer_authsecure', $data);
     }
 
-
     public function myprofile() {
         $this->checkSession();
         
@@ -111,6 +110,7 @@ class Authuser extends CI_Controller {
         $this->load->view('auth/view_userprofile');
         $this->load->view('tmpl/footer_authsecure' );
     }
+
     public function selectapplication() {
         $this->checkSession();
         $data = array();
@@ -249,7 +249,6 @@ class Authuser extends CI_Controller {
 
         redirect('auth');
     }
-
 
     public function test() {
         $practice = [
