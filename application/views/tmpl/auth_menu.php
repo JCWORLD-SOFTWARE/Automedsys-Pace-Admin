@@ -46,12 +46,6 @@
             </li>
 
             <li>
-                <a href="<?php echo base_url(); ?>crud/bkousers">
-                    <i class="icon-graph"></i>
-                    Backoffice Users</a>
-            </li>
-
-            <li>
                 <a href="<?php echo base_url(); ?>crud/practiceregistration">
                     <i class="icon-bulb"></i>
                     Practice Registration</a>
