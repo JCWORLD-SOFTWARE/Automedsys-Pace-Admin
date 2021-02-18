@@ -56,8 +56,6 @@
                     Applications</a>
             </li>
 
-
-
             <li class="heading">
                 <h3 class="uppercase">Deployment</h3>
             </li>
