@@ -413,6 +413,7 @@ class Crud extends CI_Controller {
 
         $id = $this->input->get('id');
         $data["id"] = $id;
+        
         if ($_POST) {
             $in = array();
             $in['id'] = $id;
@@ -443,6 +444,7 @@ class Crud extends CI_Controller {
 
             if ($in['practicename']!='' && $in['username']!='' && $in['password']!=''
                     && $in['practicetype']!='' && $in['contact_email']!='' && $in['country']!='') {
+
                 $id = $this->Applications_model->update($in);
                 if ($id>0) {
                     $data['message'] = 'Record updated';
@@ -456,6 +458,7 @@ class Crud extends CI_Controller {
         }
         
         $res = $this->Applications_model->retreive($id);
+        
         if (is_array($res) && count($res)>0) {
             $item = $res[0];
             $data['practicename'] = $item['practicename'];
@@ -483,6 +486,7 @@ class Crud extends CI_Controller {
             $data['statuscode'] = $item['statuscode'];
             $data['port_number'] = $item['port_number'];
         }
+
         $data['practicetype_combobox'] = $this->Specialty_model->ComboBox('practicetype',$data['practicetype']);
         
         $this->load->view('/tmpl/header_authsecure', $data);
