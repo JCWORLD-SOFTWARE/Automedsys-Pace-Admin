@@ -24,7 +24,7 @@
 <!-- END PAGE HEADER-->
 <!-- BEGIN DASHBOARD STATS -->
 <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="dashboard-stat blue-madison">
             <div class="visual">
                 <i class="fa fa-comments"></i>
@@ -43,7 +43,7 @@
         </div>
     </div>
     
-    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="dashboard-stat red-intense">
             <div class="visual">
                 <i class="fa fa-bar-chart-o"></i>
@@ -61,7 +61,7 @@
             </a>
         </div>
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="dashboard-stat green-haze">
             <div class="visual">
                 <i class="fa fa-shopping-cart"></i>
@@ -75,24 +75,6 @@
                 </div>
             </div>
             <a class="more" href="<?php echo base_url(); ?>crud/practiceregistration">
-                View more <i class="m-icon-swapright m-icon-white"></i>
-            </a>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-        <div class="dashboard-stat purple-plum">
-            <div class="visual">
-                <i class="fa fa-globe"></i>
-            </div>
-            <div class="details">
-                <div class="number">
-                  <a style="color:white" href='<?php echo base_url(); ?>crud/practiceaccounts'>Accounts</a>
-                </div>
-                <div class="desc">
-                   Practice Accounts
-                </div>
-            </div>
-            <a class="more" href="<?php echo base_url(); ?>crud/practiceaccounts">
                 View more <i class="m-icon-swapright m-icon-white"></i>
             </a>
         </div>

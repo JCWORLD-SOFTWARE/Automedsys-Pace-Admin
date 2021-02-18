@@ -57,11 +57,6 @@
                     Practice Registration</a>
             </li>
             <li>
-                <a href="<?php echo base_url(); ?>crud/practiceaccounts">
-                    <i class="icon-bulb"></i>
-                    Practice Accounts</a>
-            </li>
-            <li>
                 <a href="<?php echo base_url(); ?>crud/applications">
                     <i class="icon-bulb"></i>
                     Applications</a>
