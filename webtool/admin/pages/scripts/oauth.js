@@ -27,14 +27,14 @@ $( document ).ready(function() {
       "ClientId": ClientId,
       "IdentityProvider": ProviderId,
       "TokenRequestType": "0",
-      "RedirectUrl": "http://localhost:8888/automedsysmainweb/admin/oauth"
+      "RedirectUrl": "http://localhost:8888/automedsys-pace-admin/oauth"
     })
 }).done(function( msg ) {
   console.log("dtaaa", msg)
   if(msg.ResponseData){
     localStorage.setItem(JSON.stringify(msg.ResponseData))
 
-    // window.location.href = 'http://localhost:8888/automedsysmainweb/admin/auth';
+    // window.location.href = 'http://localhost:8888/automedsys-pace-admin/auth';
 
   }
 });

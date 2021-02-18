@@ -127,7 +127,7 @@ class OAuth extends CI_Controller
     {
         $url = "";
         if ($_SERVER['HTTP_HOST'] == "localhost:8888") {
-            $url = 'http://localhost:8888/automedsysmainweb/admin/oauth';
+            $url = 'http://localhost:8888/automedsys-pace-admin/oauth';
         } else if ($_SERVER['HTTP_HOST'] == "qa-pace.automedsys.net") {
             $url = 'https://qa-pace.automedsys.net/oauth';
         } else if ($_SERVER['HTTP_HOST'] == "dev-pace.automedsys.net") {

@@ -27,7 +27,7 @@ if($_SERVER['HTTP_HOST'] == "localhost:8080"){
     $config['base_url'] = 'http://localhost:8080/admin/';
 
 }else if($_SERVER['HTTP_HOST'] == "localhost:8888"){
-    $config['base_url'] = 'http://localhost:8888/automedsysmainweb/admin/';
+    $config['base_url'] = 'http://localhost:8888/automedsys-pace-admin/';
 
 }
 else if($_SERVER['HTTP_HOST'] == "10.10.20.56:8081"){
