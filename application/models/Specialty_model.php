@@ -25,7 +25,7 @@ class Specialty_model extends Base_model {
     }
 
     public function ComboBox($name,$value){
-        return $this->combo_box('specialty',$name,$value,'id','code');
+        return $this->combo_box('specialty',$name,$value,'code','specialty');
     }
 
 }

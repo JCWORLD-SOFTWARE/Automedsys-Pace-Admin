@@ -158,7 +158,6 @@
         </div>
         <div class="form-group">
             <label class="control-label">Practice Type</label>
-            <!-- input type="text" name="practicetype" placeholder="GEN1" value="<?=$practicetype?>" class="form-control"/ -->
             <?= $practicetype_combobox ?>
         </div>
         <div class="form-group">

@@ -445,8 +445,8 @@ class Crud extends CI_Controller {
             if ($in['practicename']!='' && $in['username']!='' && $in['password']!=''
                     && $in['practicetype']!='' && $in['contact_email']!='' && $in['country']!='') {
 
-                $id = $this->Applications_model->update($in);
-                if ($id>0) {
+                $savedModelId = $this->Applications_model->update($in);
+                if ($savedModelId > 0) {
                     $data['message'] = 'Record updated';
                 } else {
                     $data['message'] = 'Failed to update record';
@@ -470,7 +470,7 @@ class Crud extends CI_Controller {
             $data['country'] = $item['country'];
             $data['taxid'] = $item['taxid'];
             $data['practicenpi'] = $item['practicenpi'];
-            $data['practicetype'] = $item['practicetype'];
+            $data['practicetype'] = (int) $item['practicetype'];
             $data['fax'] = $item['fax'];
             $data['phone'] = $item['phone'];
             $data['contact_email'] = $item['contact_email'];

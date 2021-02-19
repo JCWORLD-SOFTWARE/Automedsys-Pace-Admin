@@ -3,11 +3,6 @@
 include_once('Base_model.php');
 
 class Applications_model extends Base_model {
-
-    function __construct() {
-        
-    }
-
     public function create($in) {
         return $this->create_operation('application',$in);
     }
