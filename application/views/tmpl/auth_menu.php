@@ -41,19 +41,22 @@
 
             <li>
                 <a href="<?php echo base_url(); ?>crud/servers">
-                    <i class="icon-bulb"></i>
-                    Servers</a>
+                    <i class="icon-cloud-upload"></i>
+                    <span class="title">Servers</span>
+                </a>
             </li>
 
             <li>
                 <a href="<?php echo base_url(); ?>crud/practiceregistration">
                     <i class="icon-bulb"></i>
-                    Practice Registration</a>
+                    <span class="title">Practice Registration</span>
+                </a>
             </li>
             <li>
                 <a href="<?php echo base_url(); ?>crud/applications">
-                    <i class="icon-bulb"></i>
-                    Applications</a>
+                    <i class="icon-pencil"></i>
+                    <span class="title">Applications</span>
+                </a>
             </li>
 
             <li class="heading">
@@ -67,7 +70,8 @@
                 <ul class="sub-menu">
                     <li>
                         <a href="<?php echo base_url(); ?>crud/applicationcreate">
-                            Add New Application</a>
+                            Add New Application
+                        </a>
                     </li>
 
                 </ul>
