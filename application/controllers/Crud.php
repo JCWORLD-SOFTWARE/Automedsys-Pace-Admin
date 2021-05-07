@@ -341,10 +341,7 @@ class Crud extends CI_Controller {
             if ($in['practicenpi']!='' && $in['username']!='' && $in['password']!=''
                     && $in['clinicname']!='' && $in['contact_email']!='' && $in['country']!='') {
                 list($data, $error_message) = $this->Practice_model->create_practice($in);
-                if (is_array($data) && count($data)>0 && array_key_exists('practicereferencenumber',$data)) {
-                    //redirect('/crud/applicationupdate?session='.$_SESSION["session"].'&practicereferencenumber='.$practicereferencenumber);
-                    //return;
-                    //var_dump($data);
+                if (is_array($data) && count($data)>0 && array_key_exists('practicereferencenumber',$data)) {;
                     $data["message"] = $error_message;
                 } else {
                     $data['message'] = 'Failed to create record: <pre>'.$error_message.'</pre>';
@@ -354,7 +351,6 @@ class Crud extends CI_Controller {
             }
             $data = array_merge($data, $in);
         }
-        //$data['practicetype_combobox'] = $this->Specialty_model->ComboBox('practicetype',$data['practicetype']);
         
         $this->load->view('/tmpl/header_authsecure', $data);
         $this->load->view('/crud/view_applications_create', $data);
