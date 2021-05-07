@@ -52,20 +52,11 @@
                     <span class="title">Practice Registration</span>
                 </a>
             </li>
-            <li>
-                <a href="<?php echo base_url(); ?>crud/applications">
-                    <i class="icon-pencil"></i>
-                    <span class="title">Applications</span>
-                </a>
-            </li>
 
-            <li class="heading">
-                <h3 class="uppercase">Deployment</h3>
-            </li>
             <li>
                 <a href="<?php echo base_url(); ?>authuser/findapplication" >
-                    <i class="icon-settings"></i>
-                    <span class="title">Find Application</span>
+                    <i class="icon-pencil"></i>
+                    <span class="title">Applications</span>
                 </a>
                 <ul class="sub-menu">
                     <li>
@@ -76,36 +67,6 @@
 
                 </ul>
             </li>
-
-            <!-- li class="heading">
-                <h3 class="uppercase">Front Desk</h3>
-            </li>
-            <li>
-                <a href="findpatient.html?session=<?= $_SESSION["session"] ?>">
-                    <i class="icon-settings"></i>
-                    <span class="title">Find Patient</span>
-                    <span class="arrow "></span>
-                </a>					
-            </li>
-            <li>
-                <a href="findpatient.html?session=<?= $_SESSION["session"] ?>">
-                    <i class="icon-settings"></i>
-                    <span class="title">New Patient</span>
-                    <span class="arrow "></span>
-                </a>					
-            </li>			
-            <li class="heading">
-                <h3 class="uppercase">Encounter</h3>
-            </li>
-            <li>
-                <a href="javascript:;">
-                    <i class="icon-settings"></i>
-                    <span class="title">Waiting List</span>
-                    <span class="arrow "></span>
-                </a>
-
-            </li -->
-
 
         </ul>
         <!-- END SIDEBAR MENU -->

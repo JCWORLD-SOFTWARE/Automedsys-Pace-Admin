@@ -275,24 +275,6 @@ class Crud extends CI_Controller {
         redirect(base_url().'/crud/practiceregistration');
     }
 
-    public function applications() {
-        $this->checkSession();
-        $data = array("message"=>"");
-
-        /*$this->load->model('Applications_model'); // call model
-        $res = $this->Applications_model->retreive();
-        $data['res'] = $res; //*/
-
-        $this->load->model('Findapplication_model'); // call model
-        list($data['data'],$data['count'],$data['message']) = 
-        $this->Findapplication_model->load_practice_request();
-        $data['result'] = $data['data'];
-
-        $this->load->view('/tmpl/header_authsecure', $data);
-        $this->load->view('/crud/view_applications', $data);
-        $this->load->view('/tmpl/footer_authsecure', $data);
-    }
-
     public function applicationcreate() {
         $this->checkSession();
         $data = array();
@@ -359,10 +341,7 @@ class Crud extends CI_Controller {
             if ($in['practicenpi']!='' && $in['username']!='' && $in['password']!=''
                     && $in['clinicname']!='' && $in['contact_email']!='' && $in['country']!='') {
                 list($data, $error_message) = $this->Practice_model->create_practice($in);
-                if (is_array($data) && count($data)>0 && array_key_exists('practicereferencenumber',$data)) {
-                    //redirect('/crud/applicationupdate?session='.$_SESSION["session"].'&practicereferencenumber='.$practicereferencenumber);
-                    //return;
-                    //var_dump($data);
+                if (is_array($data) && count($data)>0 && array_key_exists('practicereferencenumber',$data)) {;
                     $data["message"] = $error_message;
                 } else {
                     $data['message'] = 'Failed to create record: <pre>'.$error_message.'</pre>';
@@ -372,7 +351,6 @@ class Crud extends CI_Controller {
             }
             $data = array_merge($data, $in);
         }
-        //$data['practicetype_combobox'] = $this->Specialty_model->ComboBox('practicetype',$data['practicetype']);
         
         $this->load->view('/tmpl/header_authsecure', $data);
         $this->load->view('/crud/view_applications_create', $data);
