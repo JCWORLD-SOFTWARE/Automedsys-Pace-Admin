@@ -275,24 +275,6 @@ class Crud extends CI_Controller {
         redirect(base_url().'/crud/practiceregistration');
     }
 
-    public function applications() {
-        $this->checkSession();
-        $data = array("message"=>"");
-
-        /*$this->load->model('Applications_model'); // call model
-        $res = $this->Applications_model->retreive();
-        $data['res'] = $res; //*/
-
-        $this->load->model('Findapplication_model'); // call model
-        list($data['data'],$data['count'],$data['message']) = 
-        $this->Findapplication_model->load_practice_request();
-        $data['result'] = $data['data'];
-
-        $this->load->view('/tmpl/header_authsecure', $data);
-        $this->load->view('/crud/view_applications', $data);
-        $this->load->view('/tmpl/footer_authsecure', $data);
-    }
-
     public function applicationcreate() {
         $this->checkSession();
         $data = array();
