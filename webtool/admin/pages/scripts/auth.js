@@ -24,6 +24,8 @@ function getRedirectUrl() {
     u = "https://dev-pace.automedsys.net/oauth";
   } else if (url.includes("qa-pace")) {
     u = "https://qa-pace.automedsys.net/oauth";
+  } else if (url.includes("admin.dev")) {
+    u = "http://admin.dev.automedsys.com/oauth";
   } else {
     u = "http://localhost:8888/automedsys-pace-admin/oauth";
   }
