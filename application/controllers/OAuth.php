@@ -132,6 +132,8 @@ class OAuth extends CI_Controller
             $url = 'https://qa-pace.automedsys.net/oauth';
         } else if ($_SERVER['HTTP_HOST'] == "dev-pace.automedsys.net") {
             $url = 'https://dev-pace.automedsys.net/oauth';
+        } else if ($_SERVER['HTTP_HOST'] == "admin.dev.automedsys.com") {
+            $url = 'https://admin.dev.automedsys.com/oauth';
         }
         return $url;
     }
@@ -144,6 +146,8 @@ class OAuth extends CI_Controller
         } else if ($_SERVER['HTTP_HOST'] == "qa-pace.automedsys.net") {
             $url = 'https://qa-api.automedsys.net/emrapi/v1/identity/oauthx/token';
         } else if ($_SERVER['HTTP_HOST'] == "dev-pace.automedsys.net") {
+            $url = 'https://dev-api.automedsys.net/emrapi/v1/identity/oauthx/token';
+        } else if ($_SERVER['HTTP_HOST'] == "admin.dev.automedsys.com") {
             $url = 'https://dev-api.automedsys.net/emrapi/v1/identity/oauthx/token';
         }
         return $url;
