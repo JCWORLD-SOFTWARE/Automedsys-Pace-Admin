@@ -38,10 +38,6 @@ else if($_SERVER['HTTP_HOST'] == "10.10.20.63:8081"){
     $config['base_url'] = 'http://10.10.20.63:8081';
 
 }
-else if($_SERVER['HTTP_HOST'] == "admin.dev.automedsys.com"){
-    $config['base_url'] = 'http://admin.dev.automedsys.com';
-
-}
 else{
 $config['base_url'] = 'https://'.$_SERVER['SERVER_NAME'].'/';
 }
