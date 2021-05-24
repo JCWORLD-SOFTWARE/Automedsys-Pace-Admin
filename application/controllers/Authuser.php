@@ -10,9 +10,6 @@ class Authuser extends CI_Controller {
         $data['ident_key'] = '';
         $data['ident_val'] = '';
 
-        // print_r( $_SESSION["practice_info"]);
-        //$_SESSION["authToken"]["Username"] = 'Dummy value';
-        // $_SESSION["session"] = 'dummy-dummy---';
         $this->load->library('session');
 
         $this->checkSession();
@@ -30,16 +27,17 @@ class Authuser extends CI_Controller {
     
     public function findapplication() {
         $this->checkSession();
+        
         $data = array();
-        $result = array();
+
         $offset = 0;
         $limit = 10;
+
         $data['search_key'] = $this->input->get('search_key');
         $data['search_val'] = $this->input->get('search_val');
-        //$data['offset'] = (int)($this->input->get('offset'));
         $data['page'] = ( $this->uri->segment(3) ) ? $this->uri->segment(3) : 0;
         $data['offset'] = is_numeric($data['page']) ? $data['page'] : $offset;
-        $data['limit'] = $limit; //(int)($this->input->get('limit'));
+        $data['limit'] = $limit;
 
         if ($data['limit']<$limit) $data['limit'] = $limit;
         if ($data['offset']<0) $data['offset'] = 0;
@@ -54,9 +52,10 @@ class Authuser extends CI_Controller {
             $params = [
                 'search_key' => $data['search_key'],
                 'search_val' => $data['search_val'],
-                // 'session' => $_SESSION["session"], // no more needed
             ];
+
             $this->load->library('pagination');
+
             $config = [
                 'total_rows' => $data['count'],
                 'base_url' => base_url().'authuser/findapplication',
@@ -91,11 +90,7 @@ class Authuser extends CI_Controller {
             $data['search_key'] = $this->input->post('search_key');
             $data['search_val'] = $this->input->post('search_val');
         }
-        if (trim($data['search_key'])!="" && $data['search_val']!="") {
-            /* $result = $this->Findapplication_model->find_application(
-                $data['search_key'],$data['search_val']
-            ); //*/
-        }
+        
         $data["result"] = $data['data']; //$result;
 
         $this->load->view('tmpl/header_authsecure', $data);
@@ -113,7 +108,9 @@ class Authuser extends CI_Controller {
 
     public function selectapplication() {
         $this->checkSession();
+        
         $data = array();
+
         $data['message'] = '';
         $data['server'] = 0;
         $data['template'] = 0;
@@ -122,6 +119,7 @@ class Authuser extends CI_Controller {
         $data['search_key'] = $this->input->get('search_key');
         $data['search_val'] = $this->input->get('search_val');
         $data['validate_npi'] = $this->input->get('validate_npi');
+
         $practicecode = $this->input->get('practicecode');
 
         $this->load->model('Applications_model'); // call model
@@ -131,7 +129,8 @@ class Authuser extends CI_Controller {
         $this->load->model('Templates_model');
 
         list($data['data'],$data['count'],$data['message']) = 
-        $this->Findapplication_model->load_practice_request(0,1,$practicecode);
+            $this->Findapplication_model->load_practice_request(0,1,$practicecode);
+        
         foreach ($data['data'] as $app) {
             if ($app["PracticeCode"]==$practicecode) {
                 $data["application"] = $app;
@@ -165,9 +164,6 @@ class Authuser extends CI_Controller {
 
         $res = $this->Templates_model->load_templates();
         $data['templates'] = $res[0];
-        
-        /* $applications = $this->Applications_model->retreive($id);
-        $data["application"] = $applications[0]; //*/
 
         $data['server_id'] = 0;
         if ($_POST) {
@@ -274,6 +270,9 @@ class Authuser extends CI_Controller {
             ]
         ];
         list($err,$msg,$body) = $this->GenerateDeploymentEmail($practice["practiceconfig"][0]);
+        
+        $data = ["message" => ""];
+
         if ($err) {
             $data["message"].= "\n<br/>\n".$msg;
         } else {
@@ -301,14 +300,17 @@ class Authuser extends CI_Controller {
     private function GenerateDeploymentEmail($data) {
         $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
         $genLink = "";
+        
         if (strpos($actual_link, 'dev-practice') !== false) {
             $genLink =  'http://dev-practice.automedsys.net/';
-        }else {
+        } else {
             $genLink =  'http://qa-practice.automedsys.net/';
         }
+
         $this->load->helper('gmail');
 
         $data["contact"] = "provider";
+        
         if ((array_key_exists('firstname',$data) && $data['firstname']!='') || 
             (array_key_exists('lastname',$data) && $data['lastname']!='')) {
             $data["contact"] = "";
@@ -316,10 +318,12 @@ class Authuser extends CI_Controller {
                    (array_key_exists('contact_lastname',$data) && $data['contact_lastname']!='')) {
             $data["contact"] = "contact";
         }
+        
         // Generate body
         $name = trim($this->getName($data));
         $provider_name = $data['provider_prefix']." ".$data["provider_firstname"]." ".$data["provider_middlename"]." ".$data["provider_lastname"]." ".$data["provider_suffix"];
         $provider_name = trim(preg_replace('/\s+/', ' ', $provider_name));
+        
         $email_data = [
             "AUX_FULLNAME" => $name,
             "AUX_FIRSTNAME" => $data["firstname"],
@@ -337,10 +341,10 @@ class Authuser extends CI_Controller {
             "AUX_PRACTICENAME" => $data["PracticeName"],
             "AUX_PRACTICEID" => $data["PracticeCode"],
             "AUX_PORT" => $data["channel_no"],
-            // "AUX_DOWNLOAD_LINK" => $data["download_file"], //this needs to be changed, we are no longer using the desktop application
             "AUX_DOWNLOAD_LINK" => $genLink,// this needs to be dynamic, based on the environment
             "AUX_DOCUMENTATION_LINK" => "https://www.automedsys.net",
         ];
+        
         $data['html'] = $this->load->view('email/deployed', $email_data, TRUE); 
         
         $subject = Gmail::ExtractTitle($data['html'],"Congratulations and Welcome to AutoMedsys!");
@@ -353,14 +357,18 @@ class Authuser extends CI_Controller {
 
     private function SendAdminEmail($data, $err) {
         $this->load->helper('gmail');
+        
         // Generate body
         ob_start();
         var_dump($data);
+        
         $data_dump = "<pre>".ob_get_clean()."</pre>";
+        
         $email_data = [
             "data" => $data_dump,
             "error" => $err
         ];
+        
         $adminData = [
             "email" => "acidumirae@gmail.com",
             "contact" => 1,
@@ -370,6 +378,7 @@ class Authuser extends CI_Controller {
             "lastname" => "Admin", "1_lastname" => "Admin",
             "suffix" => "", "1_suffix" => ""
         ];
+        
         $name = trim($this->getName($adminData));
         $adminData['html'] = $this->load->view('email/admin', $email_data, TRUE); 
         list($err,$msg,$body) = Gmail::SendMail($adminData,$name,"Practice deployment");
@@ -378,13 +387,18 @@ class Authuser extends CI_Controller {
     public function VerifyNPI() {
         global $automedsys;
         set_time_limit(0);
+        
         $data = [];
         $npi = $this->input->get('npi');
+        
         if ($npi=='') {
             return;
         }
+        
         $this->load->model('Findapplication_model'); // call model
+        
         $validation = $this->Findapplication_model->getValidateNPI($npi);
+        
         if (is_array($validation) && array_key_exists('id',$validation) && $validation['id']>0) {
             // We have already validated this NPI
             echo $validation['data'];
@@ -448,8 +462,10 @@ class Authuser extends CI_Controller {
         } catch (Exception $e) {
             $data["error"] = "Failure: ".$e->getMessage().$e->getTraceAsString();
         }
+        
         // Save validation result
         $id = $this->Findapplication_model->createValidateNPI($npi);
+        
         if ($id>0) {
             $validation = $this->Findapplication_model->saveValidateNPI($id, $data);
             if (is_array($data) && array_key_exists("result_count",$data) && $data["result_count"]>0 
@@ -458,7 +474,9 @@ class Authuser extends CI_Controller {
                 $this->Findapplication_model->updateValidateNPI($npi,true);
             }
         }
+
         $data["npi"] = $npi;
+        
         echo json_encode($data);
     }
 }

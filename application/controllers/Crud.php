@@ -19,11 +19,12 @@ class Crud extends CI_Controller {
         $this->load->view('tmpl/footer_authsecure', $data);
     }
 
-    public function checkSession (){
+    public function checkSession () {
         if(!$this->session->userdata('sessionId')){
             redirect("auth");
         }
     }
+
     public function servers() {
         $this->checkSession();
         $data = array();
