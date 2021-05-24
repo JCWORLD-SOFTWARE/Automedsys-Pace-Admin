@@ -131,7 +131,6 @@ class Findapplication_model extends CI_Model {
             </soap:Envelope>");
 
             $result = curl_exec($ch);
-            //var_dump($result);
             curl_close($ch);
 
             // Massage SOAP envelope, so it is parseable by SimpleXMLElement class
@@ -214,9 +213,8 @@ class Findapplication_model extends CI_Model {
              */
         } catch (Exception $e) {
             $error_message = "Failure: ".$e->getMessage().$e->getTraceAsString();
-            //$error_message = "Service failure, please try again later";
         }
-        //var_dump($error_message);
+
         return [$data, $count, $error_message];
     }
     
