@@ -161,7 +161,10 @@
                         <label class="control-label">Server</label>
                         <?= $servers_combobox ?>
                     </div>
-                
+                    <div class="form-group">
+                        <label class="control-label">Attach to tenant (Overrides Server)</label>
+                        <?= $practices_combobox ?>
+                    </div>
 
                 </div>
                 </form>

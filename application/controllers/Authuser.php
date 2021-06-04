@@ -113,6 +113,7 @@ class Authuser extends CI_Controller {
 
         $data['message'] = '';
         $data['server'] = 0;
+        $data['practice'] = 0;
         $data['template'] = 0;
         $data['npi_validation'] = NULL;
         $data['provider_npi_validation'] = NULL;
@@ -161,6 +162,9 @@ class Authuser extends CI_Controller {
 
         $res = $this->Servers_model->load_servers();
         $data['servers'] = $res[0];
+
+        $res = $this->Practice_model->load_practices();
+        $data['practices'] = $res[0];
 
         $res = $this->Templates_model->load_templates();
         $data['templates'] = $res[0];
@@ -232,7 +236,20 @@ class Authuser extends CI_Controller {
                 $servers[] = $server;
             }
         }
+        $practices = []; 
+        $practices[] = [
+            'id' => 0,
+            'name' => 'No parent tenant (set primary, must select Server)',
+            'endpoint_address' => '',
+            'host_address' => ''
+        ];
+        foreach ($data['practices'] as $practice) {
+            if ($practice['status'] == 1) {
+                $practice[] = $practice;
+            }
+        }
         $data["servers_combobox"] = $this->Servers_model->ComboBoxData('server',$data['server'],$servers);
+        $data["practices_combobox"] = $this->Practice_model->ComboBoxData('practice',$data['practice'],$practices);
         $data["templates_combobox"] = $this->Templates_model->ComboBoxData('template',$data['template'],$data['templates']);
 
         $this->load->view('tmpl/header_authsecure', $data);
