@@ -242,6 +242,7 @@ class Practice_model extends Base_model {
                 <ApprovePractice xmlns=\"http://automedsys.net/webservices\">
                     <PracticeId>".$in["id"]."</PracticeId>
                     <ServerId>".$in["server"]."</ServerId>
+                    <ParentTenantId>".$in["parent_tenant_id"]."</ParentTenantId>
                     <DatabaseServerId>".$in["database_id"]."</DatabaseServerId>
                     <DatabaseTemplateId>".$in["template_id"]."</DatabaseTemplateId>
                     <AccessControl>
@@ -409,7 +410,7 @@ class Practice_model extends Base_model {
         return $this->combo_box('automedsys_practices',$name,$value,'id','name');
     }
 
-    public function ComboBoxData($name,$value,$data){
-        return $this->combo_box_data($data,$name,$value,'id',['name','endpoint_address','host_address']);
+    public function ComboBoxData($name,$value,$data,$event=''){
+        return $this->combo_box_data($data,$name,$value,'id',['name','endpoint_address','host_address'],$event);
     }
 }

@@ -130,8 +130,12 @@ class Base_model extends CI_Model {
         return $res;
     }
 
-    public function combo_box_data($data,$name,$value,$key,$title) {
-        $res = "<select class=\"form-control\" name=\"${name}\">\n";
+    public function combo_box_data($data,$name,$value,$key,$title,$event='') {
+        $res = "<select class=\"form-control\" name=\"${name}\"";
+        if ($event != '') {
+            $res.= " onChange=\"return ${event}\"";
+        }
+        $res.= ">\n";
         if (is_array($data) && count($data)>0) {
             foreach ($data as $f) {
                 $res.= "<option value=\"".$f[$key]."\"";

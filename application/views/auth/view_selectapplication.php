@@ -216,5 +216,16 @@
 function selectResult(id) {
     document.location = '<?php echo base_url(); ?>authuser/selectapplication?id='+id;
 }
+function practiceChanged(value) {
+    let template = $('select[name="template"]');
+    let server = $('select[name="server"]');
+    if (value === '0') {
+        template.prop('disabled', false);
+        server.prop('disabled', false);
+    } else {
+        template.prop('disabled', true);
+        server.prop('disabled', true);
+    }
+}
 // -->
 </script>

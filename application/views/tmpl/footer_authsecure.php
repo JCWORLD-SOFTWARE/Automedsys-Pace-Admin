@@ -723,6 +723,7 @@ jQuery(document).ready(function() {
    Index.initChat();
    Index.initMiniCharts();
    Tasks.initDashboardWidget();
+   <?php if (isset($footer_js)) { echo $footer_js; } ?>
 });
 </script>
 <!-- END JAVASCRIPTS -->
