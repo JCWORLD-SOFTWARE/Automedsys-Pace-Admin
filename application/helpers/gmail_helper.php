@@ -35,8 +35,8 @@ class Gmail
             $headers = $mime->headers($headers);
 
         $host = "ssl://smtp.gmail.com";
-        $username = "support@automedsys.com";
-        $password = "may12002@2021!";
+        $username = "demo@automedsys.com"; // "support@automedsys.com";
+        $password = "<Wy7>R3D"; // "may12002@2021!";
 
         $smtp = Mail::factory('smtp',
         array (
