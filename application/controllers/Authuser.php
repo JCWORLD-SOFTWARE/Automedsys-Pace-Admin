@@ -301,7 +301,7 @@ class Authuser extends CI_Controller {
         $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
         $genLink = "";
         
-        if (strpos($actual_link, 'dev-practice') !== false) {
+        if (strpos($actual_link, 'dev-pace') !== false) {
             $genLink =  'http://dev-practice.automedsys.net/';
         } else {
             $genLink =  'http://qa-practice.automedsys.net/';
