@@ -113,6 +113,7 @@ class Authuser extends CI_Controller {
 
         $data['message'] = '';
         $data['server'] = 0;
+        $data['practice'] = 0;
         $data['template'] = 0;
         $data['npi_validation'] = NULL;
         $data['provider_npi_validation'] = NULL;
@@ -162,15 +163,29 @@ class Authuser extends CI_Controller {
         $res = $this->Servers_model->load_servers();
         $data['servers'] = $res[0];
 
+        $res = $this->Practice_model->load_practices();
+        $data['practices'] = $res[0];
+
         $res = $this->Templates_model->load_templates();
         $data['templates'] = $res[0];
 
         $data['server_id'] = 0;
         if ($_POST) {
             $data["id"] = $this->input->post('id');
-            $data["server"] = $this->input->post('server');
-            $data["template"] = $this->input->post('template');
-            if ($data["id"]>0 && $data["server"]>0 && $data["template"]>0) {
+
+            $data["practice"] = $this->input->post('practice');
+            if ($data["practice"] > 0) {
+                // We will attach to a parrent tenant
+                $data["parent_tenant_id"] = $data["practice"];
+                $data["database_id"] = '';
+                $data["template_id"] = '';
+                $data["download_file"] = '';
+            } else {
+                $data["server"] = $this->input->post('server');
+                $data["template"] = $this->input->post('template');
+            }
+
+            if ($data["id"]>0 && ($data["practice"] > 0 || ($data["server"]>0 && $data["template"]>0))) {
                 if ($data["server"] == PHP_INT_MAX) {
                     $data["server"] = 0;
                 }
@@ -232,8 +247,40 @@ class Authuser extends CI_Controller {
                 $servers[] = $server;
             }
         }
+        $practices = []; 
+        $practices[] = [
+            'id' => 0,
+            'name' => 'No parent tenant (set primary, must select Server)',
+            'endpoint_address' => '',
+            'host_address' => ''
+        ];
+        foreach ($data['practices'] as $practice) {
+            //var_dump($practice);
+            if ($practice['status'] === '0') {     
+                $names = array(); 
+                $host_addresses = array();
+                $practiceserverlist = json_decode(json_decode($practice["practiceserverlist"], true)[0], true);
+                foreach ($practiceserverlist as $practiceserver) {
+                    $names[] = $practiceserver["name"];
+                    $host_addresses[] = $practiceserver["host_address"];
+                }
+                $name = $practice["practiceconfig_id"] . " (" . implode(",", $names) . ")";
+                $host_address = " (" . implode(",", $host_addresses) . ")";
+                $practices[] = array(
+                    'id' => $practice['id'],
+                    'name' => $name,
+                    'endpoint_address' => $practice["endpoint_address"],
+                    'host_address' => $host_address,
+                    'practice' => $practice
+                );
+            }
+        }
+        //var_dump($practices);
         $data["servers_combobox"] = $this->Servers_model->ComboBoxData('server',$data['server'],$servers);
+        $data["practices_combobox"] = $this->Practice_model->ComboBoxData('practice',$data['practice'],$practices,'practiceChanged(this.value)');
         $data["templates_combobox"] = $this->Templates_model->ComboBoxData('template',$data['template'],$data['templates']);
+
+        $data["footer_js"] = 'practiceChanged($(\'select[name="practice"]\').val());';
 
         $this->load->view('tmpl/header_authsecure', $data);
         $this->load->view('auth/view_selectapplication', $data);
