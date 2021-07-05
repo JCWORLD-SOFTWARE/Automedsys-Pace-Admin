@@ -434,92 +434,31 @@ class Authuser extends CI_Controller {
     public function VerifyNPI() {
         global $automedsys;
         set_time_limit(0);
+
+        $this->load->helper('ClientAuthenticator');
         
         $data = [];
         $npi = $this->input->get('npi');
         
-        if ($npi=='') {
+        if ($npi === '') {
             return;
         }
         
-        $this->load->model('Findapplication_model'); // call model
-        
-        $validation = $this->Findapplication_model->getValidateNPI($npi);
-        
-        if (is_array($validation) && array_key_exists('id',$validation) && $validation['id']>0) {
-            // We have already validated this NPI
-            echo $validation['data'];
-            return;
-        }
-
         try {
-            $url = $automedsys->cfgReadChar("auxpro.pace_endpoint");
-			$url = str_replace("?WSDL", "", $url);
-
-            //setting the curl parameters.
+            $devApiBaseUrl = $automedsys->cfgReadChar("auxpro.dev_api_base_url");
+            
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_POST, true );
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: text/xml; charset=utf-8',
-                'SOAPAction: "http://automedsys.net/webservices/VerifyNPI"'
-            ));
+            curl_setopt($ch, CURLOPT_URL, $devApiBaseUrl . "/emrapi/v1/npiregisry/providers/{$npi}");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Bearer ' . ClientAuthenticator::getToken(),
+            ]);
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                        
-            $raw_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-                        <soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">
-                        <soap:Body>
-                            <VerifyNPI xmlns=\"http://automedsys.net/webservices\">
-                                <NPI>${npi}</NPI>
-                                <sessionid>string</sessionid>
-                            </VerifyNPI>
-                        </soap:Body>
-                        </soap:Envelope>";
-
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $raw_xml);
-
             $result = curl_exec($ch);
-            //var_dump($result);
             curl_close($ch);
 
-            // Massage SOAP envelope, so it is parseable by SimpleXMLElement class
-            $result = str_replace(' xmlns="http://www.automedsys.com/messaging"','',$result);
-            $result = str_replace(' xmlns="http://automedsys.net/webservices"','',$result);
-            $result = str_replace('soap:','',$result);
-
-            $xml = new SimpleXMLElement($result);
-            if (is_object($xml) && property_exists($xml,'Body') 
-             && is_object($xml->Body) && property_exists($xml->Body,'VerifyNPIResponse') 
-             && is_object($xml->Body->VerifyNPIResponse) && property_exists($xml->Body->VerifyNPIResponse,'VerifyNPIResult')
-             && is_object($xml->Body->VerifyNPIResponse->VerifyNPIResult)) {
-                // Process response 
-                $res = $xml->Body->VerifyNPIResponse->VerifyNPIResult;
-                //var_dump($res);
-
-                if (property_exists($res,'ErrorCode') && (int)$res->ErrorCode==0) {
-                    $data = json_decode((string)$res->Suggestion, true);
-                } else if (property_exists($res,'ErrorMessage') && ((string)$res->ErrorMessage)!="") {
-                    $data["error"] = $res->ErrorMessage . "<br/>" . $res->Suggestion; // . "<br/>" . htmlentities($raw_xml);
-                }
-            }
-            if (!is_array($data) || count($data)<1) {
-                $data["error"] = "Unknown error!";
-            }
-            
+            $data = json_decode($result, true);
         } catch (Exception $e) {
             $data["error"] = "Failure: ".$e->getMessage().$e->getTraceAsString();
-        }
-        
-        // Save validation result
-        $id = $this->Findapplication_model->createValidateNPI($npi);
-        
-        if ($id>0) {
-            $validation = $this->Findapplication_model->saveValidateNPI($id, $data);
-            if (is_array($data) && array_key_exists("result_count",$data) && $data["result_count"]>0 
-             && is_array($data["results"]) && count($data["results"])>0 && $data["results"][0]["number"]!='')  {
-                // Refine the condition
-                $this->Findapplication_model->updateValidateNPI($npi,true);
-            }
         }
 
         $data["npi"] = $npi;
