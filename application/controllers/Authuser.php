@@ -282,9 +282,9 @@ class Authuser extends CI_Controller {
 
         $data["footer_js"] = 'practiceChanged($(\'select[name="practice"]\').val());';
 
-        // $this->load->view('tmpl/header_authsecure', $data);
-        // $this->load->view('auth/view_selectapplication', $data);
-        // $this->load->view('tmpl/footer_authsecure', $data);
+        $this->load->view('tmpl/header_authsecure', $data);
+        $this->load->view('auth/view_selectapplication', $data);
+        $this->load->view('tmpl/footer_authsecure', $data);
     }
 
     public function logout() {
