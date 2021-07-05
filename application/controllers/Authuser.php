@@ -146,16 +146,8 @@ class Authuser extends CI_Controller {
                     $this->VerifyNPI();
                     $data["provider_npi_validation"] = json_decode(ob_get_clean(),true);
                 } else {
-                    // Load NPI validation
-                    $f = $this->Findapplication_model->getValidateNPI($app["NPI"]);
-                    if($f && $f !== null){
-                    $data["npi_validation"] = json_decode($f["data"], true);
-                    $f = $this->Findapplication_model->getValidateNPI($app["provider_NPI"]);
-                    $data["provider_npi_validation"] = json_decode($f["data"], true);
-                    }else{
-                        $data["npi_validation"] = new stdClass();
-                        $data["provider_npi_validation"] = new stdClass();
-                    }
+                    $data["npi_validation"] = new stdClass();
+                    $data["provider_npi_validation"] = new stdClass();
                 }
             }
         }
@@ -439,10 +431,6 @@ class Authuser extends CI_Controller {
         
         $data = [];
         $npi = $this->input->get('npi');
-        
-        if ($npi === '') {
-            return;
-        }
         
         try {
             $devApiBaseUrl = $automedsys->cfgReadChar("auxpro.dev_api_base_url");
