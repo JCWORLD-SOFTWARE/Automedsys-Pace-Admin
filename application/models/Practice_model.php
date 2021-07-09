@@ -306,13 +306,10 @@ class Practice_model extends Base_model {
         return $data;
     }
 
-    function load_practices() {
+    function load_practices($compact = 0, $param = "", $limit = 0, $offset = 0) {
         global $automedsys;
         // $automedsys = new automedsys_api_oameye\Automedsys();
         $data = [];
-        $count = 0;
-        $limit = 10;
-        $offset = 0;
         $error_message = "";
         $url = $automedsys->cfgReadChar("auxpro.pace_endpoint");
         try {
@@ -329,6 +326,8 @@ class Practice_model extends Base_model {
             <soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">
               <soap:Body>
                 <PracticeDeployList xmlns=\"http://automedsys.net/webservices\">
+                  <compact>${compact}</compact>
+                  <param>${limit}</param>
                   <limit>${limit}</limit>
                   <offset>${offset}</offset>
                   <sessionid>".$_SESSION["session"]."</sessionid>
@@ -337,6 +336,9 @@ class Practice_model extends Base_model {
             </soap:Envelope>");
 
             $result = curl_exec($ch);
+            /* ob_start();
+            var_dump($result);
+            echo str_replace(">",">\n",ob_get_clean()); // */
             curl_close($ch);
 
             // Massage SOAP envelope, so it is parseable by SimpleXMLElement class
@@ -358,38 +360,12 @@ class Practice_model extends Base_model {
                     // $res->Suggestion
                     // $res->MiscField2
                     // $res->MiscField1
-                    $str = (string)$res->MiscField1;
-                    $str = str_replace(' encoding="utf-16"', ' encoding="utf-8"', $str);
-                    $str = str_replace(' msdata:',' ', $str);
-                    $str = str_replace(' xmlns:',' ', $str);
-                    $str = str_replace('xs:','', $str);
-                    $str = str_replace('diffgr:','', $str);
-                    $data = new SimpleXMLElement($str);
-                    $json_str = json_encode($data);
-                    $array_data = json_decode($json_str, true);
-                    $raw_fields = $array_data["schema"]["element"]["complexType"]["choice"]["element"]["complexType"]["sequence"]["element"];
-                    $fields = [];
-                    foreach ($raw_fields as $field) {
-                        $fields[] = $field["@attributes"]["name"]; // ...["type"] ...["minOccurs"]
-                    }
-                    $raw_data = $array_data["diffgram"]["mydata"]["PACEDataTable"];
-                    $data = []; $i = 1; $count = 0;
-                    if (is_array($raw_data) && array_key_exists("ID", $raw_data) && $raw_data["ID"]>0) {
-                        $raw_data = [ $raw_data ];
-                    }
-                    foreach ($raw_data as $raw_item) {
-                        if ($i>=$limit) break;
-                        $item = [];
-                        foreach ($fields as $field) {
-                            $raw_value = array_key_exists($field,$raw_item) ? $raw_item[$field] : NULL;
-                            $item[strtolower($field)] = (is_array($raw_value) && count($raw_value)<1) ? NULL : $raw_value;
-                        }
-                        $data[] = $item;
-                        $count++;
-                        $i++;
-                    }
+                    $str1 = (string)$res->MiscField1;
+                    $str2 = (string)$res->MiscField2;
+                    $dat1 = json_decode($str1, true);
+                    $dat2 = json_decode($str2, true);
                     $error_message = "";
-                    //var_dump($data);
+                    // var_dump($data);
                 } else {
                     if (property_exists($res,'ErrorMessage') && ((string)$res->ErrorMessage)!="") {
                         $error_message = "Loading practice list failed: " . $res->ErrorMessage . "<br/>" . $res->Suggestion;
@@ -403,7 +379,7 @@ class Practice_model extends Base_model {
             //$error_message = "Service failure, please try again later";
         }
         //var_dump($error_message);
-        return [$data, $count, $error_message];
+        return [$dat1, $dat2, $error_message];
     }
 
     public function ComboBox($name,$value){

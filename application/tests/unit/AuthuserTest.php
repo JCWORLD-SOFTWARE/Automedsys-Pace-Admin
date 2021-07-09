@@ -1,5 +1,8 @@
 <?php
 
+// https://rohjay.one/how-to-easily-setup-phpunit-tests-for-codeigniter-3/
+// alternative https://www.youtube.com/watch?v=rq7W-rLSloA
+
 use PHPUnit\Framework\TestCase;
 
 class AuthuserTest extends TestCase

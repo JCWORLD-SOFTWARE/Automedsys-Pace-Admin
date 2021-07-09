@@ -163,21 +163,24 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label">Attach to tenant (Overrides Server)</label>
+                        <?= $ranges_combobox ?>
+                    </div>
+                    <div class="form-group">
                         <?= $practices_combobox ?>
                     </div>
 
                 </div>
                 </form>
                 <a class="edit" href="#" onclick="if (confirm('Are you sure you want to deploy?')) document.crud.submit();return false;">
-                    <button id="sample_editable_1_new" class="btn green">Deploy</button></a>
+                    <button id="deploy_button" class="btn green">Deploy</button></a>
 
                 <a class="edit" href="/authuser/findapplication?search_key=<?=$search_key?>&search_val=<?=$search_val?>" onclick="return confirm('Are you sure you want to cancel?');">
-                    <button id="sample_editable_1_new" class="btn red">Cancel</button> </a>
+                    <button id="cancel_button" class="btn red">Cancel</button> </a>
             </div>
             </form>
             <h1>NPI validation</h1>
             <a class="edit" href="?practicecode=<?=$application["PracticeCode"]?>&validate_npi=1" onclick="return confirm('Are you sure you want to validate NPIs?');">
-                    <button id="sample_editable_1_new" class="btn blue">Validate</button> </a>
+                    <button id="validate_button" class="btn blue">Validate</button> </a>
             <table style="width:100%;">
             <thead>
             <tr><th>Practice NPI (<?= $application['NPI'] ?>)</th><th>Provider NPI (<?= $application['provider_NPI'] ?>)</th></tr>
@@ -217,14 +220,38 @@ function selectResult(id) {
     document.location = '<?php echo base_url(); ?>authuser/selectapplication?id='+id;
 }
 function practiceChanged(value) {
+    let submit = $('#deploy_button');
+    let range = $('select[name="range"]').val();
+    // let practice = $('select[name="practice"]');
+    if (value === '0' && range !== '0') {
+        submit.prop('disabled', true);
+    } else {
+        submit.prop('disabled', false);
+    }
+}
+function rangeChanged(value) {
     let template = $('select[name="template"]');
     let server = $('select[name="server"]');
-    if (value === '0') {
+    let range = $('select[name="range"]');
+    let practice = $('select[name="practice"]');
+    let submit = $('#deploy_button');
+    if (value === '') {
         template.prop('disabled', false);
         server.prop('disabled', false);
+        submit.prop('disabled', false);
+        practice.prop('disabled', true);
     } else {
+        practice.prop('disabled', false);
         template.prop('disabled', true);
         server.prop('disabled', true);
+        if (practice.val() !== '0')
+        {
+            submit.prop('disabled', false);
+        }
+        else
+        {
+            submit.prop('disabled', true);
+        }
     }
 }
 // -->

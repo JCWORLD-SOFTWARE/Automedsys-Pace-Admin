@@ -113,6 +113,7 @@ class Authuser extends CI_Controller {
 
         $data['message'] = '';
         $data['server'] = 0;
+        $data['range'] = 0;
         $data['practice'] = 0;
         $data['template'] = 0;
         $data['npi_validation'] = NULL;
@@ -155,8 +156,10 @@ class Authuser extends CI_Controller {
         $res = $this->Servers_model->load_servers();
         $data['servers'] = $res[0];
 
-        $res = $this->Practice_model->load_practices();
+        $res = $this->Practice_model->load_practices(2,"",0,0);
         $data['practices'] = $res[0];
+        $data['ranges'] = $res[1];
+        //var_dump($res);
 
         $res = $this->Templates_model->load_templates();
         $data['templates'] = $res[0];
@@ -165,18 +168,20 @@ class Authuser extends CI_Controller {
         if ($_POST) {
             $data["id"] = $this->input->post('id');
 
+            $data["range"] = $this->input->post('range');
             $data["practice"] = $this->input->post('practice');
-            if ($data["practice"] > 0) {
+            if ($data["range"] > 0) {
                 // We will attach to a parrent tenant
                 $data["parent_tenant_id"] = $data["practice"];
-                $data["database_id"] = '';
-                $data["template_id"] = '';
+                $data["database_id"] = '0';
+                $data["template_id"] = '0';
                 $data["download_file"] = '';
             } else {
                 $data["server"] = $this->input->post('server');
                 $data["template"] = $this->input->post('template');
             }
 
+            // TODO:
             if ($data["id"]>0 && ($data["practice"] > 0 || ($data["server"]>0 && $data["template"]>0))) {
                 if ($data["server"] == PHP_INT_MAX) {
                     $data["server"] = 0;
@@ -186,6 +191,7 @@ class Authuser extends CI_Controller {
                         $data["database_id"] = $f["server_id"];
                         $data["template_id"] = $f["template_id"];
                         $data["download_file"] = $f["download_file"];
+                        $data["parent_tenant_id"] = '0';
                         break;
                     }
                 }
@@ -208,7 +214,7 @@ class Authuser extends CI_Controller {
                     $practice["practiceconfig"][0]['download_file'] = $data["download_file"];
                     list($err,$msg,$body) = $this->GenerateDeploymentEmail($practice["practiceconfig"][0]);
                     if ($err) {
-                        $data["message"].= "\n<br/>\n".$msg;
+                        $data["message"].= "Failed to send message:\n<br/>\n".$msg;
                     } else {
                         $data["message"] = "Message:<br/>\n".$body;
                     }
@@ -236,7 +242,58 @@ class Authuser extends CI_Controller {
         ];
         foreach ($data['servers'] as $server) {
             if ($server['status'] == 1) {
-                $servers[] = $server;
+                $servers[$server['id']] = $server;
+            }
+        }
+        $ranges = [];
+        $ranges[] = [
+            'id' => '',
+            'name' => 'No parent tenant (must select Server)',
+            'endpoint_address' => '',
+            'host_address' => ''
+        ];
+        if (is_array($data['ranges'])) {
+            $range_sources = [];
+            foreach ($data['ranges'] as $range) {
+                /*
+                ["Deployments"]=>int(1)
+                ["PracticeServer_ID"]=>int(1)
+                ["Stamp"]=>string(7) "2021-03"
+                ["name"]=>string(12) "EMR / ERX #1"
+                ["binding"]=>string(14) "AUXCORSVRVM01D"
+                ["endpoint_address"]=>string(58) "net.tcp://10.10.20.53:14202/PACEAgentAppServer/MainService"
+                */
+                if (!array_key_exists($range['Stamp'], $range_sources)
+                 || !is_array($range_sources[$range['Stamp']])) {
+                    $range_sources[$range['Stamp']] = array();
+                }
+                if (!array_key_exists('deployments', $range_sources[$range['Stamp']])
+                 || !isset($range_sources[$range['Stamp']]['deployments'])) {
+                    $range_sources[$range['Stamp']]['deployments'] = 0;
+                }
+                $range_sources[$range['Stamp']]['deployments'] += $range['Deployments'];
+                if (!array_key_exists('name', $range_sources[$range['Stamp']])
+                 || !is_array($range_sources[$range['Stamp']]['name'])) {
+                    $range_sources[$range['Stamp']]['name'] = array();
+                }
+                $range_sources[$range['Stamp']]['name'][] = $range['name'];
+                if (!array_key_exists('endpoint_address', $range_sources[$range['Stamp']])
+                 || !is_array($range_sources[$range['Stamp']]['endpoint_address'])) {
+                    $range_sources[$range['Stamp']]['endpoint_address'] = array();
+                }
+                $range_sources[$range['Stamp']]['endpoint_address'][] = $range['endpoint_address'];
+            }
+            if (count($range_sources) > 0) {
+                foreach ($range_sources as $key=>$range_source) {
+                    $endpoint_address = " (Deployments: " . $range_source['deployments'] . ")";
+                    $host_address = " (" . implode(",", $range_source['name']) . ")";
+                    $ranges[] = array(
+                        'id' => $key,
+                        'name' => $key,
+                        'endpoint_address' => $endpoint_address,
+                        'host_address' => $host_address
+                    );
+                }
             }
         }
         $practices = []; 
@@ -246,29 +303,60 @@ class Authuser extends CI_Controller {
             'endpoint_address' => '',
             'host_address' => ''
         ];
-        foreach ($data['practices'] as $practice) {
-            //var_dump($practice);
-            if ($practice['status'] === '0') {     
-                $names = array(); 
-                $host_addresses = array();
-                $practiceserverlist = json_decode(json_decode($practice["practiceserverlist"], true)[0], true);
-                foreach ($practiceserverlist as $practiceserver) {
-                    $names[] = $practiceserver["name"];
-                    $host_addresses[] = $practiceserver["host_address"];
+        if (is_array($data['practices'])) {
+            foreach ($data['practices'] as $practice) {
+                //var_dump($practice);
+                /*
+                ["ID"]=>int(1)
+                ["PracticeConfig_ID"]=>int(30030)
+                ["PracticeServer_ID"]=>int(1)
+                ["endpoint_address"]=>string(58) "net.tcp://10.10.20.53:14202/PACEAgentAppServer/MainService"
+                ["status"]=>int(0)
+                */
+                // var_dump($servers);
+                /*
+                array(13) {
+                    ["id"]=>string(1) "1"
+                    ["name"]=>string(12) "EMR / ERX #1"
+                    ["status"]=>string(1) "1"
+                    ["created_dt"]=>string(29) "2020-01-02T08:54:04.947-08:00"
+                    ["host_address"]=>string(11) "10.10.20.53"
+                    ["port_no"]=>string(5) "15999"
+                    ["binding"]=>string(14) "AUXCORSVRVM01D"
+                    ["modified_dt"]=>NULL
+                    ["endpoint_address"]=>string(58) "net.tcp://10.10.20.53:14202/PACEAgentAppServer/MainService"
+                    ["application_package"]=>string(46) "C:\AutoMedSys\deployment\EMRSVR-deployment.zip"
+                    ["application_deployment"]=>string(24) "C:\AutoMedSys\deployment"
+                    ["port_range"]=>string(37) "[{"min_port":16001,"max_port":16050}]"
+                    ["legacy_port_range"]=>string(37) "[{"min_port":15001,"max_port":15050}]"
                 }
-                $name = $practice["practiceconfig_id"] . " (" . implode(",", $names) . ")";
-                $host_address = " (" . implode(",", $host_addresses) . ")";
-                $practices[] = array(
-                    'id' => $practice['id'],
-                    'name' => $name,
-                    'endpoint_address' => $practice["endpoint_address"],
-                    'host_address' => $host_address,
-                    'practice' => $practice
-                );
+                */
+                if ($practice['status'] == 0) {
+                    $names = array();
+                    $host_addresses = array();
+                    $practiceserverlist = is_array($servers[$practice["PracticeServer_ID"]]) ?
+                          array(array("name" => $servers[$practice["PracticeServer_ID"]]["name"], "host_address" => $servers[$practice["PracticeServer_ID"]]["endpoint_address"]))
+                        : array(array("name" => "root", "host_address" => $practice["endpoint_address"]));
+                    // $practiceserverlist = json_decode(json_decode($practice["PracticeServerList"], true)[0], true);
+                    foreach ($practiceserverlist as $practiceserver) {
+                        $names[] = $practiceserver["name"];
+                        $host_addresses[] = $practiceserver["host_address"];
+                    }
+                    $name = $practice["PracticeConfig_ID"] . " (" . implode(",", $names) . ")";
+                    $host_address = " (" . implode(",", $host_addresses) . ")";
+                    $practices[] = array(
+                        'id' => $practice['ID'],
+                        'name' => $name,
+                        'endpoint_address' => $practice["endpoint_address"],
+                        'host_address' => $host_address,
+                        'practice' => $practice
+                    );
+                }
             }
         }
         //var_dump($practices);
         $data["servers_combobox"] = $this->Servers_model->ComboBoxData('server',$data['server'],$servers);
+        $data["ranges_combobox"] = $this->Practice_model->ComboBoxData('range',$data['range'],$ranges,'rangeChanged(this.value)');
         $data["practices_combobox"] = $this->Practice_model->ComboBoxData('practice',$data['practice'],$practices,'practiceChanged(this.value)');
         $data["templates_combobox"] = $this->Templates_model->ComboBoxData('template',$data['template'],$data['templates']);
 
