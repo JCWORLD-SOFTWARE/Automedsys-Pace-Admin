@@ -1,5 +1,7 @@
 <?php
 
+include_once('Base_model.php');
+
 class Practice_model extends Base_model {
 
     function __construct() {
@@ -313,6 +315,18 @@ class Practice_model extends Base_model {
         $error_message = "";
         $url = $automedsys->cfgReadChar("auxpro.pace_endpoint");
         try {
+            $xmlStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+            <soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">
+              <soap:Body>
+                <PracticeDeployList xmlns=\"http://automedsys.net/webservices\">
+                  <compact>${compact}</compact>
+                  <param>${param}</param>
+                  <limit>${limit}</limit>
+                  <offset>${offset}</offset>
+                  <sessionid>".$_SESSION["session"]."</sessionid>
+                </PracticeDeployList>
+              </soap:Body>
+            </soap:Envelope>";
             //setting the curl parameters.
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -322,18 +336,7 @@ class Practice_model extends Base_model {
                 'SOAPAction: "http://automedsys.net/webservices/PracticeDeployList"'
             ));
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-            <soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">
-              <soap:Body>
-                <PracticeDeployList xmlns=\"http://automedsys.net/webservices\">
-                  <compact>${compact}</compact>
-                  <param>${limit}</param>
-                  <limit>${limit}</limit>
-                  <offset>${offset}</offset>
-                  <sessionid>".$_SESSION["session"]."</sessionid>
-                </PracticeDeployList>
-              </soap:Body>
-            </soap:Envelope>");
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $xmlStr);
 
             $result = curl_exec($ch);
             /* ob_start();

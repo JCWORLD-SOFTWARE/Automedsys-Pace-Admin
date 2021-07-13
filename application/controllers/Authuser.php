@@ -246,12 +246,6 @@ class Authuser extends CI_Controller {
             }
         }
         $ranges = [];
-        $ranges[] = [
-            'id' => '',
-            'name' => 'No parent tenant (must select Server)',
-            'endpoint_address' => '',
-            'host_address' => ''
-        ];
         if (is_array($data['ranges'])) {
             $range_sources = [];
             foreach ($data['ranges'] as $range) {
@@ -287,7 +281,7 @@ class Authuser extends CI_Controller {
                 foreach ($range_sources as $key=>$range_source) {
                     $endpoint_address = " (Deployments: " . $range_source['deployments'] . ")";
                     $host_address = " (" . implode(",", $range_source['name']) . ")";
-                    $ranges[] = array(
+                    $ranges[$key] = array(
                         'id' => $key,
                         'name' => $key,
                         'endpoint_address' => $endpoint_address,
@@ -295,7 +289,15 @@ class Authuser extends CI_Controller {
                     );
                 }
             }
+            arsort($ranges);
         }
+        array_unshift($ranges, [
+            'id' => '',
+            'name' => 'No parent tenant (must select Server)',
+            'endpoint_address' => '',
+            'host_address' => ''
+        ]);
+
         $practices = []; 
         $practices[] = [
             'id' => 0,
@@ -303,15 +305,65 @@ class Authuser extends CI_Controller {
             'endpoint_address' => '',
             'host_address' => ''
         ];
+        $practices = $this->getParentPractices($data, $practices, $servers);
+
+        //var_dump($practices);
+        $data["servers_combobox"] = $this->Servers_model->ComboBoxData('server',$data['server'],$servers);
+        $data["ranges_combobox"] = $this->Practice_model->ComboBoxData('range',$data['range'],$ranges,'rangeChanged(this.value)');
+        $data["practices_combobox"] = $this->Practice_model->ComboBoxData('practice',$data['practice'],$practices,'practiceChanged(this.value)');
+        $data["templates_combobox"] = $this->Templates_model->ComboBoxData('template',$data['template'],$data['templates']);
+
+        $data["footer_js"] = 'practiceChanged($(\'select[name="practice"]\').val());';
+
+        $this->load->view('tmpl/header_authsecure', $data);
+        $this->load->view('auth/view_selectapplication', $data);
+        $this->load->view('tmpl/footer_authsecure', $data);
+    }
+
+    public function searchDeployments() {
+        $data = [];
+        $data['search_key'] = $this->input->post('search_key');
+        $data['search_val'] = $this->input->post('search_val');
+
+        $this->load->model('Servers_model');
+        $this->load->model('Practice_model');
+
+        $res = $this->Servers_model->load_servers();
+        $data['servers'] = $res[0];
+        $servers = [];
+        foreach ($data['servers'] as $server) {
+            if ($server['status'] == 1) {
+                $servers[$server['id']] = $server;
+            }
+        }
+
+        $res = $this->Practice_model->load_practices(2,$data['search_val'],0,0);
+        $data['practices'] = $res[0];
+        $data['ranges'] = $res[1];
+
+        $practices = []; 
+        $practices[] = [
+            'id' => 0,
+            'name' => 'No parent tenant (set primary, must select Server)',
+            'endpoint_address' => '',
+            'host_address' => ''
+        ];
+        $practices = $this->getParentPractices($data, $practices, $servers);
+        header('Content-Type: application/json');
+        echo json_encode($practices);
+    }
+
+    private function getParentPractices($data, $practices, $servers) {
         if (is_array($data['practices'])) {
             foreach ($data['practices'] as $practice) {
                 //var_dump($practice);
                 /*
-                ["ID"]=>int(1)
-                ["PracticeConfig_ID"]=>int(30030)
-                ["PracticeServer_ID"]=>int(1)
-                ["endpoint_address"]=>string(58) "net.tcp://10.10.20.53:14202/PACEAgentAppServer/MainService"
-                ["status"]=>int(0)
+                    ["ID"]=>int(1)
+                    ["PracticeConfig_ID"]=>int(30030)
+                    ["PracticeServer_ID"]=>int(1)
+                    ["name"]=>string(12) "EMR / ERX #1"
+                    ["binding"]=>string(14) "AUXCORSVRVM01D"
+                    ["endpoint_address"]=>string(58) "net.tcp://10.10.20.53:14202/PACEAgentAppServer/MainService"
                 */
                 // var_dump($servers);
                 /*
@@ -331,7 +383,7 @@ class Authuser extends CI_Controller {
                     ["legacy_port_range"]=>string(37) "[{"min_port":15001,"max_port":15050}]"
                 }
                 */
-                if ($practice['status'] == 0) {
+                if ($practice['PracticeServer_ID'] > 0) {
                     $names = array();
                     $host_addresses = array();
                     $practiceserverlist = is_array($servers[$practice["PracticeServer_ID"]]) ?
@@ -354,17 +406,7 @@ class Authuser extends CI_Controller {
                 }
             }
         }
-        //var_dump($practices);
-        $data["servers_combobox"] = $this->Servers_model->ComboBoxData('server',$data['server'],$servers);
-        $data["ranges_combobox"] = $this->Practice_model->ComboBoxData('range',$data['range'],$ranges,'rangeChanged(this.value)');
-        $data["practices_combobox"] = $this->Practice_model->ComboBoxData('practice',$data['practice'],$practices,'practiceChanged(this.value)');
-        $data["templates_combobox"] = $this->Templates_model->ComboBoxData('template',$data['template'],$data['templates']);
-
-        $data["footer_js"] = 'practiceChanged($(\'select[name="practice"]\').val());';
-
-        $this->load->view('tmpl/header_authsecure', $data);
-        $this->load->view('auth/view_selectapplication', $data);
-        $this->load->view('tmpl/footer_authsecure', $data);
+        return $practices;
     }
 
     public function logout() {

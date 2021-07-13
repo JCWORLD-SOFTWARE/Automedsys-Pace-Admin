@@ -229,6 +229,7 @@ function practiceChanged(value) {
         submit.prop('disabled', false);
     }
 }
+
 function rangeChanged(value) {
     let template = $('select[name="template"]');
     let server = $('select[name="server"]');
@@ -252,6 +253,36 @@ function rangeChanged(value) {
         {
             submit.prop('disabled', true);
         }
+        searchParentDeployments('param',value);
+    }
+}
+var practice_cache = {};
+function searchParentDeployments(key, val, practice) {
+    if (practice_cache.hasOwnProperty(val)) {
+        fillParentDeployments(practice, practice_cache[val]);
+    }
+    $.post( "searchDeployments", { search_key: key, search_val: val }, function( practices ) {
+        practice_cache[val] = practices;
+        fillParentDeployments(practice, practices);
+    });
+}
+function fillParentDeployments(practice, practices) {
+    //alert(practices);
+    /*
+        {
+        "id": 0,
+        "name": "No parent tenant (set primary, must select Server)",
+        "endpoint_address": "",
+        "host_address": ""
+        }
+    */
+    $('select[name="practice"]').empty();
+    for(var k in practices) {
+        var data = practices[k];
+        //alert(data.id);
+        var option = $('<option />');
+        option.attr('value', data.id).text(data.name);
+        $('select[name="practice"]').append(option);
     }
 }
 // -->
