@@ -28,8 +28,8 @@ class Servers_model extends Base_model {
         return $this->combo_box('automedsys_servers',$name,$value,'id','name');
     }
 
-    public function ComboBoxData($name,$value,$data){
-        return $this->combo_box_data($data,$name,$value,'id',['name','endpoint_address','host_address']);
+    public function ComboBoxData($name,$value,$data, $event = ''){
+        return $this->combo_box_data($data,$name,$value,'id',['name','endpoint_address','host_address'], $event);
     }
 
     public function load_servers() {
