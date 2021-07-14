@@ -219,6 +219,17 @@
 function selectResult(id) {
     document.location = '<?php echo base_url(); ?>authuser/selectapplication?id='+id;
 }
+
+function serverChanged(value) {
+    let submit = $('#deploy_button');
+    let server = $('select[name="server"]').val();
+    if (value === '0') {
+        submit.prop('disabled', true);
+    } else {
+        submit.prop('disabled', false);
+    }
+}
+
 function practiceChanged(value) {
     let submit = $('#deploy_button');
     let range = $('select[name="range"]').val();

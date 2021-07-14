@@ -308,13 +308,13 @@ class Authuser extends CI_Controller {
         $practices = $this->getParentPractices($data, $practices, $servers);
 
         //var_dump($practices);
-        $data["servers_combobox"] = $this->Servers_model->ComboBoxData('server',$data['server'],$servers);
+        $data["servers_combobox"] = $this->Servers_model->ComboBoxData('server',$data['server'],$servers,'serverChanged(this.value)');
         $data["ranges_combobox"] = $this->Practice_model->ComboBoxData('range',$data['range'],$ranges,'rangeChanged(this.value)');
         $data["practices_combobox"] = $this->Practice_model->ComboBoxData('practice',$data['practice'],$practices,'practiceChanged(this.value)');
         $data["templates_combobox"] = $this->Templates_model->ComboBoxData('template',$data['template'],$data['templates']);
 
-        $data["footer_js"] = 'practiceChanged($(\'select[name="practice"]\').val());';
-
+        $data["footer_js"] = 'practiceChanged($(\'select[name="practice"]\').val()); serverChanged($(\'select[name="server"]\').val());';
+        
         $this->load->view('tmpl/header_authsecure', $data);
         $this->load->view('auth/view_selectapplication', $data);
         $this->load->view('tmpl/footer_authsecure', $data);
