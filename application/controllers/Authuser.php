@@ -118,6 +118,7 @@ class Authuser extends CI_Controller {
         $data['template'] = 0;
         $data['npi_validation'] = NULL;
         $data['provider_npi_validation'] = NULL;
+        $data['practice_name'] = '';
         $data['search_key'] = $this->input->get('search_key');
         $data['search_val'] = $this->input->get('search_val');
         $data['validate_npi'] = $this->input->get('validate_npi');
@@ -170,6 +171,7 @@ class Authuser extends CI_Controller {
 
             $data["range"] = $this->input->post('range');
             $data["practice"] = $this->input->post('practice');
+            $data["practice_name"] = $this->input->post('practice_name');
             if ($data["range"] > 0) {
                 // We will attach to a parrent tenant
                 $data["parent_tenant_id"] = $data["practice"];
@@ -313,7 +315,27 @@ class Authuser extends CI_Controller {
         $data["practices_combobox"] = $this->Practice_model->ComboBoxData('practice',$data['practice'],$practices,'practiceChanged(this.value)');
         $data["templates_combobox"] = $this->Templates_model->ComboBoxData('template',$data['template'],$data['templates']);
 
-        $data["footer_js"] = 'practiceChanged($(\'select[name="practice"]\').val()); serverChanged($(\'select[name="server"]\').val());';
+        $data["footer_js"] = '
+        practiceChanged($(\'select[name="practice"]\').val()); serverChanged($(\'select[name="server"]\').val());
+        // AJAX call for autocomplete 
+        $(document).ready(function(){
+            $("#search-box").keyup(function(){
+                $.ajax({
+                type: "POST",
+                url: "searchDeploymentsByPracticeName",
+                data:\'search_key=&search_val=\'+$(this).val(),
+                beforeSend: function(){
+                    $("#search-box").css("background","#FFF url(/images/loadericon.gif) no-repeat 165px");
+                },
+                success: function(data){
+                    $("#suggesstion-box").show();
+                    $("#suggesstion-box").html(data);
+                    $("#search-box").css("background","#FFF");
+                }
+                });
+            });
+        });
+        ';
         
         $this->load->view('tmpl/header_authsecure', $data);
         $this->load->view('auth/view_selectapplication', $data);
@@ -351,6 +373,46 @@ class Authuser extends CI_Controller {
         $practices = $this->getParentPractices($data, $practices, $servers);
         header('Content-Type: application/json');
         echo json_encode($practices);
+    }
+
+    public function searchDeploymentsByPracticeName() {
+        $data = [];
+        $data['search_key'] = $this->input->post('search_key');
+        $data['search_val'] = $this->input->post('search_val');
+
+        $this->load->model('Servers_model');
+        $this->load->model('Practice_model');
+
+        $res = $this->Servers_model->load_servers();
+        $data['servers'] = $res[0];
+        $servers = [];
+        foreach ($data['servers'] as $server) {
+            if ($server['status'] == 1) {
+                $servers[$server['id']] = $server;
+            }
+        }
+
+        $res = $this->Practice_model->load_practices(3,$data['search_val'],10,0);
+        $data['practices'] = $res[0];
+        $data['ranges'] = $res[1];
+
+        $practices = []; 
+        $practices = $this->getParentPractices($data, $practices, $servers);
+
+        echo '<ul id="practice-list">';
+        foreach ($practices as $practice) {
+            echo '<li onclick="selectPracticeName(\'';
+            echo $practice['practice']['Stamp'].'_'.$practice['practice']['ID'];
+            /*
+            {"ID":15,"PracticeConfig_ID":40079,"PracticeServer_ID":3,
+                "name":"EMR \/ ERX #2","binding":"AUXCORSVRVM02D",
+                "endpoint_address":"net.tcp:\/\/10.10.20.58:14202\/PACEAgentAppServer\/MainService",
+                "PracticeName":"BLUE CAMPBELL AND ASSOCIATES LLC","Stamp":"2021-07"}
+            */
+            echo '\',\''.$practice['practice']['PracticeName'].'\');">';
+            echo $practice['practice']['PracticeName'].' => '.$practice['name'].'</li>';
+        }
+        echo '</ul>';
     }
 
     private function getParentPractices($data, $practices, $servers) {

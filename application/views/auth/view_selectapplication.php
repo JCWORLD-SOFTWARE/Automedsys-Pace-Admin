@@ -1,3 +1,11 @@
+
+        <style type="text/css">
+                #practice-list{float:left;list-style:none;margin-top:-3px;padding:0;width:600px;position: absolute;}
+                #practice-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
+                #practice-list li:hover{background:#ece3d2;cursor: pointer;}
+                #search-box{}
+        </style>
+
 <!-- BEGIN PAGE HEADER-->
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -168,7 +176,11 @@
                     <div class="form-group">
                         <?= $practices_combobox ?>
                     </div>
-
+                    <div class="form-group">
+                        <input type="hidden" id="practice_name" name="practice_name" value="<?= $practice_name ?>">
+                        <input class="form-control" type="text" id="search-box" placeholder="Practice name...">
+                        <div id="suggesstion-box" style="display: none;"></div>
+                    </div>
                 </div>
                 </form>
                 <a class="edit" href="#" onclick="if (confirm('Are you sure you want to deploy?')) document.crud.submit();return false;">
@@ -230,10 +242,12 @@ function serverChanged(value) {
     }
 }
 
+var practiceSelected = '<?= $practice ?>';
 function practiceChanged(value) {
     let submit = $('#deploy_button');
     let range = $('select[name="range"]').val();
     // let practice = $('select[name="practice"]');
+    practiceSelected = value;
     if (value === '0' && range !== '0') {
         submit.prop('disabled', true);
     } else {
@@ -293,8 +307,24 @@ function fillParentDeployments(practice, practices) {
         //alert(data.id);
         var option = $('<option />');
         option.attr('value', data.id).text(data.name);
+        if (data.id == practiceSelected) {
+            option.attr('selected','selected');
+        }
         $('select[name="practice"]').append(option);
     }
+}
+
+//To select specialty code name
+function selectPracticeName(key, val) {
+	$("#practice_name").val(key);
+	$("#search-box").val(val);
+	$("#suggesstion-box").hide();
+    // process key
+    var data = $("#practice_name").val().split('_');
+    $('select[name="practice"]').val(data[1]);
+    $('select[name="range"]').val(data[0]);
+    practiceChanged(data[1]);
+    rangeChanged(data[0]);
 }
 // -->
 </script>
